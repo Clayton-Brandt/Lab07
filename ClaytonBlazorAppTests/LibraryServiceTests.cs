@@ -18,7 +18,7 @@ namespace ClaytonBlazorAppTests
 
             // FOR LAB07, EDIT THIS LINE JUST SO IT FAILS, THEN FIX IT LATER.
             // From Assert.Single to Assert.Empty.
-            Assert.Single(service.GetBooks());
+            Assert.Empty(service.GetBooks());
         }
 
         // Tests that a new book gets assigned an Id starting at 1.
