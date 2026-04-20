@@ -1,29 +1,29 @@
-name: .NET CI
+name: .NET CI  # Name of the workflow shown in GitHub Actions
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]  # Runs automatically when code is pushed to main
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main" ]  # Also runs when a pull request targets main
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Uses a fresh Linux virtual machine for each run
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4  # Downloads the repository code into the runner
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v4  # Installs .NET on the virtual machine
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 8.0.x  # Specifies which version of .NET to use
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore  # Downloads all required NuGet packages
 
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore  # Compiles the project without restoring again
 
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal  # Runs all unit tests and shows results
