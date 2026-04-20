@@ -1,0 +1,74 @@
+﻿@page "/return"
+@using ClaytonBlazorApp.Models
+@using ClaytonBlazorApp.Services
+@inject ILibraryService LibraryService
+
+<h3>Return Book</h3>
+
+<div class="mb-3">
+    <label>User:</label>
+    <select class="form-select mb-2" @bind="selectedUserId">
+        <option value="">Select User</option>
+        @foreach (var user in users)
+        {
+            <option value="@user.Id">@user.Name</option>
+        }
+    </select>
+
+    @if (borrowedBooks.Count > 0)
+    {
+        <label>Borrowed Books:</label>
+        <select class="form-select mb-2" @bind="selectedBookIndex">
+            <option value="">Select Book</option>
+            @for (int i = 0; i < borrowedBooks.Count; i++)
+            {
+                <option value="@i">@borrowedBooks[i].Title (@borrowedBooks[i].Author)</option>
+            }
+        </select>
+
+        <button class="btn btn-primary" @onclick="ReturnBook">Return Book</button>
+    }
+</div>
+
+@code {
+    private List<User> users;
+    private List<Book> borrowedBooks = new List<Book>();
+    private int selectedBookIndex;
+
+    private int _selectedUserId;
+    private int selectedUserId
+    {
+        get => _selectedUserId;
+        set
+        {
+            _selectedUserId = value;
+            LoadBorrowedBooks();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        users = LibraryService.GetUsers();
+    }
+
+    private void LoadBorrowedBooks()
+    {
+        borrowedBooks.Clear();
+        selectedBookIndex = 0;
+
+        if (selectedUserId == 0) return;
+
+        var dict = LibraryService.GetBorrowedBooks();
+        if (dict.ContainsKey(selectedUserId))
+            borrowedBooks = new List<Book>(dict[selectedUserId]);
+    }
+
+    private void ReturnBook()
+    {
+        if (selectedUserId == 0 || selectedBookIndex < 0 || borrowedBooks.Count == 0) return;
+
+        LibraryService.ReturnBook(selectedUserId, selectedBookIndex);
+
+        LoadBorrowedBooks();
+    }
+}

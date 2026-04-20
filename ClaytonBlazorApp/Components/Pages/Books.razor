@@ -1,0 +1,121 @@
+﻿@page "/books"
+@using ClaytonBlazorApp.Models
+@using ClaytonBlazorApp.Services
+@inject ILibraryService LibraryService
+
+<h3>Books</h3>
+
+<!-- Add New Book Form -->
+<div class="mb-3">
+    <input @bind="newBook.Title" placeholder="Title" class="form-control mb-1" />
+    <input @bind="newBook.Author" placeholder="Author" class="form-control mb-1" />
+    <input @bind="newBook.ISBN" placeholder="ISBN" class="form-control mb-1" />
+    <button class="btn btn-primary" @onclick="AddBook">Add Book</button>
+</div>
+
+<!-- Books List -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>ISBN</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in books)
+        {
+            <tr>
+                <td>@book.Id</td>
+                <td>
+                    @if (editBook == book)
+                    {
+                        <input @bind="book.Title" class="form-control" />
+                    }
+                    else
+                    {
+                        @book.Title
+                    }
+                </td>
+                <td>
+                    @if (editBook == book)
+                    {
+                        <input @bind="book.Author" class="form-control" />
+                    }
+                    else
+                    {
+                        @book.Author
+                    }
+                </td>
+                <td>
+                    @if (editBook == book)
+                    {
+                        <input @bind="book.ISBN" class="form-control" />
+                    }
+                    else
+                    {
+                        @book.ISBN
+                    }
+                </td>
+                <td>
+                    @if (editBook == book)
+                    {
+                        <button class="btn btn-success btn-sm" @onclick="() => SaveEdit(book)">Save</button>
+                        <button class="btn btn-secondary btn-sm" @onclick="CancelEdit">Cancel</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-warning btn-sm" @onclick="() => EditBook(book)">Edit</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteBook(book.Id)">Delete</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Book> books;
+    private Book newBook = new Book();
+    private Book editBook = null;
+
+    protected override void OnInitialized()
+    {
+        books = LibraryService.GetBooks();
+    }
+
+    private void AddBook()
+    {
+        if (string.IsNullOrWhiteSpace(newBook.Title)) return;
+
+        LibraryService.AddBook(newBook);
+        books = LibraryService.GetBooks();
+        newBook = new Book();
+    }
+
+    private void EditBook(Book book)
+    {
+        editBook = book;
+    }
+
+    private void SaveEdit(Book book)
+    {
+        LibraryService.EditBook(book);
+        books = LibraryService.GetBooks();
+        editBook = null;
+    }
+
+    private void CancelEdit()
+    {
+        editBook = null;
+        books = LibraryService.GetBooks();
+    }
+
+    private void DeleteBook(int id)
+    {
+        LibraryService.DeleteBook(id);
+        books = LibraryService.GetBooks();
+    }
+}

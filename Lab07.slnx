@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ClaytonBlazorApp/ClaytonBlazorApp.csproj" />
+  <Project Path="ClaytonBlazorAppTests/ClaytonBlazorAppTests.csproj" />
+</Solution>

@@ -1,0 +1,52 @@
+﻿@page "/borrow"
+@using ClaytonBlazorApp.Models
+@using ClaytonBlazorApp.Services
+@inject ILibraryService LibraryService
+
+<h3>Borrow Book</h3>
+
+<div class="mb-3">
+    <label>User:</label>
+    <select class="form-select mb-2" @bind="selectedUserId">
+        <option value="">Select User</option>
+        @foreach (var user in users)
+        {
+            <option value="@user.Id">@user.Name</option>
+        }
+    </select>
+
+    <label>Book:</label>
+    <select class="form-select mb-2" @bind="selectedBookId">
+        <option value="">Select Book</option>
+        @foreach (var book in books)
+        {
+            <option value="@book.Id">@book.Title (@book.Author)</option>
+        }
+    </select>
+
+    <button class="btn btn-primary" @onclick="BorrowBook">Borrow</button>
+</div>
+
+@code {
+    private List<User> users;
+    private List<Book> books;
+    private int selectedUserId;
+    private int selectedBookId;
+
+    protected override void OnInitialized()
+    {
+        users = LibraryService.GetUsers();
+        books = LibraryService.GetBooks();
+    }
+
+    private void BorrowBook()
+    {
+        if (selectedUserId == 0 || selectedBookId == 0) return;
+
+        LibraryService.BorrowBook(selectedUserId, selectedBookId);
+
+        // Refresh lists
+        books = LibraryService.GetBooks();
+        selectedBookId = 0;
+    }
+}

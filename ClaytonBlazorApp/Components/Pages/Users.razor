@@ -1,0 +1,112 @@
+﻿@page "/users"
+@using ClaytonBlazorApp.Models
+@using ClaytonBlazorApp.Services
+@inject ILibraryService LibraryService
+
+<h3>Users</h3>
+
+<!-- Add New User Form -->
+<div class="mb-3">
+    <input @bind="newUser.Name" placeholder="Name" class="form-control mb-1" />
+    <input @bind="newUser.Email" placeholder="Email" class="form-control mb-1" />
+    <button class="btn btn-primary" @onclick="AddUser">Add User</button>
+</div>
+
+<!-- Users List -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in users)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>
+                    @if (editUserId == user.Id)
+                    {
+                        <input @bind="user.Name" class="form-control" />
+                    }
+                    else
+                    {
+                        @user.Name
+                    }
+                </td>
+                <td>
+                    @if (editUserId == user.Id)
+                    {
+                        <input @bind="user.Email" class="form-control" />
+                    }
+                    else
+                    {
+                        @user.Email
+                    }
+                </td>
+                <td>
+                    @if (editUserId == user.Id)
+                    {
+                        <button class="btn btn-success btn-sm" @onclick="() => SaveEdit(user)">Save</button>
+                        <button class="btn btn-secondary btn-sm" @onclick="CancelEdit">Cancel</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-warning btn-sm" @onclick="() => EditUser(user)">Edit</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteUser(user.Id)">Delete</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<User> users;
+    private User newUser = new User();
+    private int editUserId = 0;
+
+    protected override void OnInitialized()
+    {
+        users = LibraryService.GetUsers();
+    }
+
+    private void AddUser()
+    {
+        Console.WriteLine($"Adding user");
+        if (string.IsNullOrWhiteSpace(newUser.Name) || string.IsNullOrWhiteSpace(newUser.Email))
+            return;
+
+        LibraryService.AddUser(newUser);
+        users = LibraryService.GetUsers(); // refresh list
+        newUser = new User(); // clear form
+    }
+
+    private void EditUser(User user)
+    {
+        editUserId = user.Id;
+    }
+
+    private void SaveEdit(User user)
+    {
+        LibraryService.EditUser(user);
+        users = LibraryService.GetUsers(); // refresh list
+        editUserId = 0;
+    }
+
+    private void CancelEdit()
+    {
+        editUserId = 0;
+        users = LibraryService.GetUsers(); // refresh list
+    }
+
+    private void DeleteUser(int id)
+    {
+        Console.WriteLine($"Deleting user {id}");
+        LibraryService.DeleteUser(id);
+        users = LibraryService.GetUsers(); // refresh list
+    }
+}

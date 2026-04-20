@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../ClaytonBlazorAppTests/ClaytonBlazorAppTests.csproj" Id="acdfa524-8d32-4ca2-bc3e-7a32a4c76058" />
+  <Project Path="ClaytonBlazorApp.csproj" />
+</Solution>
